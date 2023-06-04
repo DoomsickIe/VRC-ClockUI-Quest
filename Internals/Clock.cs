@@ -1,16 +1,26 @@
 ﻿using System;
+using ClockUI.Internals.UI;
 
 namespace ClockUI.Internals;
 
-internal static class Clock
+public static class Clock
 {
-    public static int DisplayMode = 0;
+    public enum displayMode
+    {
+        All,
+        Date,
+        Time
+    }
+    public static int dm = 0;
+
     public static string dateFormat = "d";
-    public static string timeFormat = "hh:mm";
+    public static string hourFormat = "hh";
+    public static string seconds = "";
 
-    public static string monoFront = $"<mspace={charSpacing}em>", monoBack = "</mspace>";
-    public static float charSpacing = 50;
+    public static string ampm = "";
 
+    public static void ChangeDisplay(displayMode mode) => dm = (int)mode;
+    
     /// <summary>
     /// Updates the clock's text with the current time. This shouldn't be called anywhere else except OnLateUpdate().
     /// </summary>
@@ -20,82 +30,50 @@ internal static class Clock
         {
             return;
         }
-        switch (DisplayMode)
+        if(hourFormat == "hh")
+        {
+            ampm = DateTime.Now.Hour / 12 >= 1 ? "PM" : "AM";
+        }
+        else
+        {
+            ampm = "";
+        }
+        switch (dm)
         {
             case 0:
-                Interface.text.text = $"{monoFront}{DateTime.Now.ToString(dateFormat)} {DateTime.Now.ToString(timeFormat)}{monoBack}";
+                Interface.text.text = $"{Style.monoTag}{Style.boldTag}{Style.italicTag}{Style.align}{DateTime.Now.ToString(dateFormat)}{Style.linebreak}{DateTime.Now.ToString($"{hourFormat}:mm{seconds}")} {ampm}";
                 break;
             case 1:
-                Interface.text.text = $"{monoFront}{DateTime.Now.Date.ToString(dateFormat)}{monoBack}";
+                Interface.text.text = $"{Style.monoTag}{Style.boldTag}{Style.italicTag}{Style.align}{DateTime.Now.Date.ToString(dateFormat)}";
                 break;
             case 2:
-                Interface.text.text = $"{monoFront}{DateTime.Now.ToString(timeFormat)}{monoBack}";
+                Interface.text.text = $"{Style.monoTag}{Style.boldTag}{Style.italicTag}{Style.align}{DateTime.Now.ToString($"{hourFormat}:mm{seconds}")} {ampm}";
                 break;
         }
-    }
-
-    public static void ChangeSize(int increment)
-    {
-        Interface.text.m_fontSize += increment;
-        Interface.FontSizeDisplay.SetText(Interface.text.m_fontSize.ToString(), 28);
     }
 
     /// <summary>
     /// Toggles the display of seconds on the clock.
     /// </summary>
-    public static void ToggleSecondsDisplay()
+    public static void ToggleSeconds(bool val)
     {
-        switch (timeFormat)
-        {
-            case "hh:mm":
-                timeFormat = "hh:mm:ss";
-                break;
-            case "hh:mm:ss":
-                timeFormat = "hh:mm";
-                break;
-            case "HH:mm:ss":
-                timeFormat = "HH:mm";
-                break;
-            case "HH:mm":
-                timeFormat = "HH:mm:ss";
-                break;
-        }
+        seconds = val == true ? ":ss" : "";
+        Clock.Refresh();
     }
 
     /// <summary>
     /// Cycles between 12hr and 24hr time formats.
     /// </summary>
-    public static void SwitchTimeFormats()
+    public static void SwitchTimeFormats(bool val)
     {
-        switch (timeFormat)
-        {
-            case "HH:mm:ss":
-                timeFormat = "hh:mm:ss";
-                break;
-            case "HH:mm":
-                timeFormat = "hh:mm";
-                break;
-            case "hh:mm:ss":
-                timeFormat = "HH:mm:ss";
-                break;
-            case "hh:mm":
-                timeFormat = "HH:mm";
-                break;
-        }
+        hourFormat = val == true ? "HH" : "hh";
+        Clock.Refresh();
     }
 
-    public static void Monospace(bool val)
+    public static void SwitchDateFormats(bool val)
     {
-        if(val == true)
-        {
-            monoFront = $"<mspace={charSpacing}>";
-            monoBack = "</mspace>";
-        }
-        else
-        {
-            monoFront = "";
-            monoBack = monoFront;
-        }
+        dateFormat = val == true ? "D" : "d";
+        Clock.Refresh();
     }
 
     ///<summary>

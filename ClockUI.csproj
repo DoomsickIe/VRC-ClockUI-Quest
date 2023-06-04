@@ -147,10 +147,11 @@
   <ItemGroup>
     <Compile Include="Internals\Clock.cs" />
     <Compile Include="Internals\Config.cs" />
+    <Compile Include="Internals\UI\Style.cs" />
     <Compile Include="Internals\UI\IconMethods.cs" />
     <Compile Include="Internals\UI\Icons.cs" />
     <Compile Include="Main.cs" />
-    <Compile Include="Interface.cs" />
+    <Compile Include="Internals\Interface.cs" />
     <Compile Include="Properties\BuildInfo.cs" />
   </ItemGroup>
   <ItemGroup />
